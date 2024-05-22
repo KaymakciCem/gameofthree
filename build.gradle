@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'org.ck'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    annotationProcessor "org.projectlombok:lombok"
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "org.springframework.boot:spring-boot-starter-websocket"
+
+    implementation "org.springframework:spring-jms"
+    implementation group: 'org.apache.activemq', name: 'activemq-client-jakarta', version: project["apache.activemq.core.version"]
+
+//    implementation("org.springframework.boot:spring-boot-starter-activemq")
+
+
+
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
+
+    implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
+    implementation "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect"
+
+    compileOnly "org.projectlombok:lombok"
+
+    testAnnotationProcessor "org.projectlombok:lombok"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly "org.projectlombok:lombok"
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
