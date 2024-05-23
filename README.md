@@ -8,19 +8,24 @@ ___
 
 ### How to play the game
 - First open up the browser and go to the http://localhost:7070/index and then click to the Join Game button. 
-  Then open up another browser and do the same thing. 
+  Then open up another browser and click on the Join Game button again. 
   Then two player will be automatically play the game without any user input
+
+- The FE part is not smart enough to play when two browsers open and one user 
+  clicks on the join button. Then the second browser should refresh the page and click on the join button to play the game.
 
 ### Tech Stack
 - Java 17
 - Spring Boot
-- Websocket message broker
+- Websocket
+- Docker
 - JUnit 5
-- 
+
 ### Prerequisites
 
 ---
 - Gradle
+- ActiveMQ
 - Docker
 
 ### Build & Run
@@ -37,6 +42,9 @@ first go to the terminal and open up the project directory. "~/assignment"
 
 ### Docker
 
+to run the project
+- docker-compose up -d --build
+
 ### explicitly building docker images
 - docker run -p 61616:61616 -p 8161:8161 rmohr/activemq
 
@@ -52,3 +60,10 @@ first go to the terminal and open up the project directory. "~/assignment"
 
 ### Prometheus
 http://localhost:7070/actuator/prometheus
+
+### Parts to Improve
+- I used in memory objects for the storage to make the development time shorter.
+- Instead of the in memory noSql db (mongodb or other) is better to use for the storage.
+- The values can be set in the properties file and can be retrieved from there based on the environment.
+- I added the jars for the metrics but not implemented into the project. It should be implemented as well.
+- The integration test which is testing the applicaion end to end should be added.

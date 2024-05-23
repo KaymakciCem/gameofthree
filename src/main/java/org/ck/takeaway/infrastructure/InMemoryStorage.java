@@ -10,7 +10,6 @@ import org.ck.takeaway.domain.gameaggregate.Game;
 import org.ck.takeaway.domain.gameaggregate.GameStatus;
 import org.ck.takeaway.domain.repository.GameRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 @Component
 public class InMemoryStorage implements GameRepository {

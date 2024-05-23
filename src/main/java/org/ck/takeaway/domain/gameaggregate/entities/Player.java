@@ -15,23 +15,17 @@ public class Player extends Entity {
     private static final List<Integer> VALID_MOVES = List.of(-1, 0, 1);
 
     @Getter
-    private String name;
-
-    @Getter
     private Integer addedNumber;
 
-    public Player(final UUID id, final String name) {
+    public Player(final UUID id) {
         super(id);
-        this.name = name;
     }
 
     public OutputNumber move(final InputNumber number) {
         final Random random = new Random();
-        int low = 1;
-        int high = 3;
-        int result = random.nextInt(high-low) + low;
+        int randomIndex = random.nextInt(3);
 
-        this.addedNumber = VALID_MOVES.get(result);
+        this.addedNumber = VALID_MOVES.get(randomIndex);
 
         return new OutputNumber((number.getValue() + addedNumber) / 3);
     }

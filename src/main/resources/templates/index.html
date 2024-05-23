@@ -29,13 +29,8 @@
             <label for="manual">MANUAL</label><br>
         </div>
 
-        <div id="board">
+        <div id="gameBoard">
             <button th:onclick="joinGame([[${firstAvailableGame}]])">Join Game</button>
-
-            <div>Current Player: <span id="currentPlayer" class="text-red"></span></div>
-            <div>Resulting number: <span id="resultingNumber" class="text-red"></span></div>
-            <div>Added Number: <span id="addedNumber" class="text-red"></span></div>
-            <div>Winner: <span id="winner" class="text-red"></span></div>
         </div>
     </div>
     <div>

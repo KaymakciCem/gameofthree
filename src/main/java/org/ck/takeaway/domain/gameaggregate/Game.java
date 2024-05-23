@@ -1,5 +1,6 @@
 package org.ck.takeaway.domain.gameaggregate;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import org.ck.takeaway.domain.gameaggregate.valueobjects.InputNumber;
 import org.ck.takeaway.domain.gameaggregate.valueobjects.OutputNumber;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -24,20 +26,21 @@ public class Game extends AggregateRoot {
     private Map<UUID, Player> players;
     private UUID currentPlayerId;
 
-    protected Game(UUID id, UUID currentPlayerId, InputNumber currentNumber) {
+
+    public Game(UUID id, UUID currentPlayerId, InputNumber currentNumber) {
         super(id);
 
         this.gameStatus = GameStatus.NOT_STARTED;
-        this.players = new ConcurrentHashMap<>(2);
+        this.players = new LinkedHashMap<>(2);
         this.currentNumber = currentNumber;
         this.currentPlayerId = currentPlayerId;
     }
 
-    public Player addPlayer(final String playerName) throws GameException {
+    public Player addPlayer() throws GameException {
         var playerId = UUID.randomUUID();
         currentPlayerId = playerId;
 
-        Player player = new Player(playerId, playerName);
+        Player player = new Player(playerId);
 
         if (players.size() == 2) {
             throw new GameException("Game is full of players");
@@ -53,7 +56,7 @@ public class Game extends AggregateRoot {
         return player;
     }
 
-    public boolean canStart() {
+    private boolean canStart() {
         return gameStatus == GameStatus.READY;
     }
 
@@ -74,7 +77,6 @@ public class Game extends AggregateRoot {
 
         final OutputNumber outputNumber = player.move(inputNumber);
         this.currentNumber = new InputNumber(outputNumber.getValue());
-        this.currentPlayerId = nextPlayer(player.getId());
 
         if (currentNumber.getValue() <= 1) {
             gameStatus = GameStatus.COMPLETED;
@@ -82,13 +84,13 @@ public class Game extends AggregateRoot {
 
     }
 
-    private UUID nextPlayer(final UUID id) {
-        return players.values()
-                .stream()
-                .filter(p -> !Objects.equals(p.getId(), id))
-                .findFirst()
-                .map(Player::getId)
-                .orElseThrow(() -> new GameException("No player found"));
+    public void nextPlayer(final UUID id) {
+        this.currentPlayerId = players.values()
+                                      .stream()
+                                      .filter(p -> !Objects.equals(p.getId(), id))
+                                      .findFirst()
+                                      .map(Player::getId)
+                                      .orElseThrow(() -> new GameException("No player found"));
     }
 
     public void stopGame() {

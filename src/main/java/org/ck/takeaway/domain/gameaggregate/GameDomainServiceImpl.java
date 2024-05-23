@@ -1,6 +1,7 @@
 package org.ck.takeaway.domain.gameaggregate;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.ck.takeaway.config.jms.JmsConfig;
@@ -37,17 +38,20 @@ public class GameDomainServiceImpl implements GameDomainService {
 
     @Override
     public void addPlayer(JoinGameMessage joinGameRequest) {
-        var maybeGame = gameRepository.findById(joinGameRequest.gameId());
-        var game = maybeGame.orElseGet(() -> gameRepository
-                .save(new Game(UUID.randomUUID(), null,
-                               joinGameRequest.playMode() == PlayMode.AUTO ? new InputNumber() :
-                                       new InputNumber(joinGameRequest.startNumber()))));
+        final Game game;
+        if (Objects.isNull(joinGameRequest.gameId())) {
+            game = gameRepository.save(new Game(UUID.randomUUID(), null,
+                                                joinGameRequest.playMode() == PlayMode.AUTO ? new InputNumber() :
+                                                        new InputNumber(joinGameRequest.startNumber())));
+        } else {
+            var maybeGame = gameRepository.findById(joinGameRequest.gameId());
+            game = maybeGame.get();
+        }
 
-        game.addPlayer(joinGameRequest.playerName());
+        game.addPlayer();
 
         if (game.getGameStatus() == GameStatus.READY) {
-            var gameStatusChangedEvent = new GameStatusChangedEvent(game.getId(),
-                                                                    game.getGameStatus());
+            var gameStatusChangedEvent = new GameStatusChangedEvent(game.getId(), game.getGameStatus());
 
             game.start();
 
@@ -57,10 +61,6 @@ public class GameDomainServiceImpl implements GameDomainService {
                                               gameStatusChangedEvent.nextEvent(),
                                               Duration.ofSeconds(1));
 
-            sendJmsEvent(game.getId(), JmsConfig.GAME_STATUS_CHANGED);
-
-
-            sendStompMessage(StompSender.GAME_STATE_DESTINATION, game, GameMessageType.JOIN_GAME);
             return;
         }
 
@@ -71,11 +71,13 @@ public class GameDomainServiceImpl implements GameDomainService {
     @Override
     public void play(final Game game) throws GameException {
         var currentPlayer = game.getPlayers().values()
-                               .stream()
-                               .filter(player -> player.getId().equals(game.getCurrentPlayerId()))
-                               .toList();
+                                .stream()
+                                .filter(player -> player.getId().equals(game.getCurrentPlayerId()))
+                                .toList();
 
         game.play(currentPlayer.get(0), game.getCurrentNumber());
+        sendStompMessage(StompSender.GAME_STATE_DESTINATION, game, GameMessageType.MOVE);
+        game.nextPlayer(currentPlayer.get(0).getId());
 
         if (game.getGameStatus() == GameStatus.COMPLETED) {
             game.stopGame();
@@ -87,10 +89,11 @@ public class GameDomainServiceImpl implements GameDomainService {
 
         gameRepository.save(game);
         sendJmsEvent(game.getId(), JmsConfig.PLAYER_MOVED);
-        sendStompMessage(StompSender.GAME_STATE_DESTINATION, game, GameMessageType.MOVE);
     }
 
-    private void sendStompMessage(final String destination, final Game game, final GameMessageType messageType) {
+    private void sendStompMessage(final String destination,
+                                  final Game game,
+                                  final GameMessageType messageType) {
         var gameState = new GameState(messageType.getValue(),
                                       game.getId(),
                                       game.getCurrentPlayerId(),

@@ -8,6 +8,5 @@ import org.ck.takeaway.domain.gameaggregate.valueobjects.InputNumber;
 public record JoinGameMessage(
         String type,
         UUID gameId,
-        String playerName,
         Integer startNumber,
         PlayMode playMode) { }

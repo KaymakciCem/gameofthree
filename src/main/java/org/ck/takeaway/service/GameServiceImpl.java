@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.ck.takeaway.config.jms.JmsConfig;
+import org.ck.takeaway.domain.common.Entity;
 import org.ck.takeaway.domain.gameaggregate.GameDomainService;
 import org.ck.takeaway.domain.gameaggregate.GameStatus;
 import org.ck.takeaway.domain.repository.GameRepository;
@@ -31,7 +32,7 @@ public class GameServiceImpl implements GameService {
     public List<UUID> retrieveAvailableGames() {
         return gameRepository.findAllByGameStatus(GameStatus.WAITING_FOR_SECOND_USER)
                        .stream()
-                       .map(game -> game.getId())
+                       .map(Entity::getId)
                        .toList();
 
     }

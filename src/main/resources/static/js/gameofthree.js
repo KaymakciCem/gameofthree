@@ -53,7 +53,6 @@ const messageToGame = (message) => {
  * Starts the process of joining a game. Asks the player to enter their name and sends a message to the server requesting to join the game.
  */
 const joinGame = (gameId) => {
-
     sendMessage({
         type: "game.join",
         gameId: gameId,
@@ -74,19 +73,34 @@ const connect = () => {
         stompClient.subscribe('/topic/game.state', function (message) {
             handleMessage(JSON.parse(message.body));
         });
-        //loadGame();
     });
 }
 
 const updateGame = (message) => {
-    console.log("updategame executed cem");
-
     game = messageToGame(message);
 
-    document.getElementById("currentPlayer").innerHTML = game.playerId + ' joined.';
-    document.getElementById("resultingNumber").innerHTML = game.outputNumber;
-    document.getElementById("addedNumber").innerHTML = game.addedNumber;
-    document.getElementById("winner").innerHTML = game.winner;
+    var gameBoardDiv = document.getElementById("gameBoard");
+
+    var gameRound = document.createElement('div');
+    gameRound.innerHTML = 'GAME ROUND!';
+
+    var currentPlayer = document.createElement('div');
+    currentPlayer.innerHTML = 'current player: ' + game.playerId;
+
+    var resultingNumber = document.createElement('div');
+    resultingNumber.innerHTML = 'output number: ' + game.outputNumber;
+
+    var addedNumber = document.createElement('div');
+    addedNumber.innerHTML = 'added number: ' + game.addedNumber;
+
+    var winner = document.createElement('div');
+    winner.innerHTML = 'winner: ' + game.winner;
+
+    gameBoardDiv.appendChild(gameRound);
+    gameBoardDiv.appendChild(currentPlayer);
+    gameBoardDiv.appendChild(resultingNumber);
+    gameBoardDiv.appendChild(addedNumber);
+    gameBoardDiv.appendChild(winner);
 }
 
 window.onload = function () {
