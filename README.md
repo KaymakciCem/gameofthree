@@ -1,4 +1,4 @@
-# aggregator-service assignment
+# game-of-three assignment
 ___
 ### Spring Boot Application
 

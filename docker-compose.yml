@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  database:
+    image: mongo
+    container_name: game_of_three_mongo
+    hostname: mongodb
+    environment:
+      - MONGO_INITDB_DATABASE=admin
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_REPLICA_SET_NAME=rs0
+    ports:
+      - 27017:27017
+
+  jms_and_stomp_broker:
+    image: rmohr/activemq
+    container_name: game_of_three_activemq
+    environment:
+      - "TZ=Europe/Berlin"
+    ports:
+      - "61615:61615" # JMS broker (admin:adminactivemq) (amq:amq)
+      - "61613:61613" # STOMP broker (admin:adminactivemq) (amq:amq)
+      - "8160:8160"   # Web admin UI http://boot2docker:8161/admin (admin:admin)
