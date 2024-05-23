@@ -3,8 +3,13 @@ ___
 ### Spring Boot Application
 
 #### 
-- This project allows users to play a game via their browsers.
+- This project allows users to play a game via their browsers. 
 - The API exposes a REST endpoint and a websocket message broker.
+
+### How to play the game
+- First open up the browser and go to the http://localhost:7070/index and then click to the Join Game button. 
+  Then open up another browser and do the same thing. 
+  Then two player will be automatically play the game without any user input
 
 ### Tech Stack
 - Java 17
